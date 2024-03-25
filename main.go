@@ -2,9 +2,47 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"log"
+	floodControl "task/flood-control"
+	"time"
 )
 
 func main() {
+	redisAddr := "localhost:6379"
+	N := 10
+	K := 5
+	control := floodControl.NewFloodControl(redisAddr, N, K)
+
+	userID := int64(123)
+
+	for i := 0; i < 7; i++ {
+		result, err := control.Check(context.Background(), userID)
+		if err != nil {
+			log.Fatal(err)
+		}
+		if result {
+			fmt.Println("Flood control check passed")
+		} else {
+			fmt.Println("Flood control check failed")
+		}
+		time.Sleep(1 * time.Second)
+	}
+
+	time.Sleep(5 * time.Second)
+
+	for i := 0; i < 5; i++ {
+		result, err := control.Check(context.Background(), userID)
+		if err != nil {
+			log.Fatal(err)
+		}
+		if result {
+			fmt.Println("Flood control check passed")
+		} else {
+			fmt.Println("Flood control check failed")
+		}
+		time.Sleep(1 * time.Second)
+	}
 
 }
 
